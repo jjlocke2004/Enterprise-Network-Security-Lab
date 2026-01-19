@@ -45,7 +45,7 @@ Set via Control Panel → Network and Sharing Center → Change adapter settings
 
 Configured during Ubuntu Server installation using manual IPv4 settings. The login banner confirms the IP address:
 
-![Ubuntu server login](screenshots/ubuntu-login.png)
+![Ubuntu server login](../screenshots/ubuntu-login.png)
 
 ### SEC-TOOLS (Kali) – Static / DHCP on Lab Network
 
@@ -56,7 +56,7 @@ Configured during Ubuntu Server installation using manual IPv4 settings. The log
 
 Initially, SEC-TOOLS received an address on a different VMware network (`192.168.159.0/24`), which caused 100% packet loss when pinging `192.168.10.20`. After moving the adapter to VMnet1 and standardizing on `192.168.10.0/24`, ping tests to UBUNTU-SRV succeeded:
 
-![Kali ping to Ubuntu](screenshots/ping-kali-to-ubuntu.png)
+![Kali ping to Ubuntu](../screenshots/ping-kali-to-ubuntu.png)
 
 ---
 
