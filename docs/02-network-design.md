@@ -16,7 +16,7 @@ This document describes the IP addressing plan, adapter design, and a high-level
 - 192.168.10.20–192.168.10.99 – Servers and tools
 - 192.168.10.100–192.168.10.200 – Clients and test systems
 
-This layout uses a single /24 network for the lab, which is common for small homelab or small office environments and leaves room for growth. [web:124][web:125]
+This layout uses a single /24 network for the lab, which is common for small homelab or small office environments and leaves room for growth.
 
 ## Adapter Design
 
@@ -34,5 +34,7 @@ The lab network is represented by a simple hub-and-spoke design centered on the 
 - The virtual router/NAT device provides the default gateway at 192.168.10.1 for all lab systems.
 - A virtual or physical switch connects core infrastructure (DC01, file server, Ubuntu services) and any additional lab VMs and clients in the 192.168.10.0/24 network.
 
-The diagram is stored as an image in the `diagrams` folder
+The diagram is stored as an image in the `diagrams` folder:
+![Lab Network Diagram](../diagrams/lab-network.png)
+
 
