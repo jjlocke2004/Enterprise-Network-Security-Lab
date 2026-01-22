@@ -45,7 +45,7 @@ Set via Control Panel → Network and Sharing Center → Change adapter settings
 
 Configured during Ubuntu Server installation using manual IPv4 settings. The login banner confirms the IP address:
 
-![Ubuntu server login](../screenshots/ubuntu-login.png)
+![Ubuntu server login](../screenshots/build-notes-phase1-screenshots/ubuntu-login.png)
 
 ### SEC-TOOLS (Kali) – Static / DHCP on Lab Network
 
@@ -56,7 +56,7 @@ Configured during Ubuntu Server installation using manual IPv4 settings. The log
 
 Initially, SEC-TOOLS received an address on a different VMware network (`192.168.159.0/24`), which caused 100% packet loss when pinging `192.168.10.20`. After moving the adapter to VMnet1 and standardizing on `192.168.10.0/24`, ping tests to UBUNTU-SRV succeeded:
 
-![Kali ping to Ubuntu](../screenshots/ping-kali-to-ubuntu.png)
+![Kali ping to Ubuntu](../screenshots/build-notes-phase1-screenshots/ping-kali-to-ubuntu.png)
 
 ---
 
@@ -109,7 +109,7 @@ On FS01 and WIN10 (run in an elevated PowerShell session):
 Add-Computer -DomainName "corp.local" -Credential "CORP\Administrator" -Restart
 ```
 After reboot, each system can log on with domain credentials. The Windows 10 domain join is captured here: 
-![WIN10 domain join](screenshots/domain-join-win10.png)
+![WIN10 domain join](../screenshots/build-notes-phase1-screenshots/domain-join-win10.png)
 
 ## Section D – Connectivity and ICMP Echo Troubleshooting
 
@@ -128,12 +128,12 @@ To align with typical internal monitoring practices and allow ping inside the la
 Enable-NetFirewallRule -DisplayGroup "File and Printer Sharing"
 ```
 This activates the Echo Request – ICMPv4‑In rules for all profiles. The change is documented in:
-![Enabled Echo Request rule](screenshots/enabled-built-in-echo-request-ICMPv4-In.png) 
+![Enabled Echo Request rule](../screenshots/build-notes-phase1-screenshots/enabled-built-in-echo-request-ICMPv4-In.png) 
 
 ### 3. Verification
 
 After enabling the rule:
-- From WIN10: ping 192.168.10.11 – replies received (see ../screenshots/ping-win10-to-fs01.png).
+- From WIN10: ping 192.168.10.11 – replies received (see ../screenshots/build-notes-phase1-screenshots/ping-win10-to-fs01.png).
 - Additional tests from SEC-TOOLS and UBUNTU-SRV confirm end‑to‑end connectivity across the lab subnet.
 
 These steps complete Phase 1 of the build: a functioning corp.local domain with Windows and Linux hosts, consistent static addressing, and verified connectivity suitable for future security and hardening work.
