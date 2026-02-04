@@ -168,6 +168,10 @@ icacls "C:\Dept\HR"
 ```
 ![fs01-icacls-dept-shares](../screenshots/build-notes-phase2-screenshots/fs01-icacls-dept-shares.png)
 
+
 ### Outcome
 HR users (via HR_Share_RW) can fully manage their share, while other departments are denied, demonstrating least‑privilege access control on the file server.
 
+![hgreen_creating_file_to_hr](../screenshots/build-notes-phase2-screenshots/hgreen_creating_file_to_hr.png)
+![hgreen_denied_access_to_finance](../screenshots/build-notes-phase2-screenshots/hgreen_denied_access_to_finance.png)
+Tests done for each department folder screenshots can be found in */screenshots/build-notes-phase2-screenshots*
