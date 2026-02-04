@@ -18,9 +18,9 @@ hostname    # shows WIN-3LMB8KE361E (example)
 Rename-Computer -NewName "FS01" -DomainCredential CORP\Administrator -Restart
 ```
 
-![Before changing hostname to FS01](../screenshots/build-notes-phase3-screenshots/Before_Changing_HostName_To_FS01.jpg)
+![Before changing hostname to FS01](../screenshots/build-notes-phase3-screenshots/Before_Changing_HostName_To_FS01.png)
 
-![After changing hostname to FS01](../screenshots/build-notes-phase3-screenshots/After_Changing_HostName_to_FS01.jpg)
+![After changing hostname to FS01](../screenshots/build-notes-phase3-screenshots/After_Changing_HostName_to_FS01.png)
 
 Repeat this for DC01 and the Windows Client as well.
 
@@ -42,7 +42,7 @@ Verification:
 Get-ADComputer -Filter * -SearchBase "OU=Servers,OU=Corp,DC=corp,DC=local" |
   Select Name,DistinguishedName
 ```
-![Verfitication_of_servers_in_server_OU](../screenshots/build-notes-phase3-screenshots/Verfitication_of_servers_in_server_OU.jpg)
+![Verfitication_of_servers_in_server_OU](../screenshots/build-notes-phase3-screenshots/Verfitication_of_servers_in_server_OU.png)
 
 ### A.3 Create and Link “Server-Audit-Baseline” GPO
 Goal: Centralize server audit settings and prepare for file-access and logon-event monitoring.
@@ -53,7 +53,7 @@ Import-Module GroupPolicy
 New-GPO   -Name "Server-Audit-Baseline"
 New-GPLink -Name "Server-Audit-Baseline" -Target "OU=Servers,OU=Corp,DC=corp,DC=local"
 ```
-![Linking Server-Audit-Baseline GPO to Servers OU](../screenshots/build-notes-phase3-screenshots/Setting_GPLink_to_OU.jpg)
+![Linking Server-Audit-Baseline GPO to Servers OU](../screenshots/build-notes-phase3-screenshots/Setting_GPLink_to_OU.png)
 
 Within the GPO, registry-based settings were configured to enforce advanced auditing:
 
@@ -68,9 +68,9 @@ Set-GPRegistryValue -Name "Server-Audit-Baseline" `
   -Key "HKLM\System\CurrentControlSet\Control\Lsa" `
   -ValueName "SCENoApplyLegacyAuditPolicy" -Type DWord -Value 1
 ```
-![Set-GPRegistryValue for AuditLogon (1)](../screenshots/build-notes-phase3-screenshots/Set-GPRegistryValue_AuditLogon.jpg)
+![Set-GPRegistryValue for AuditLogon (1)](../screenshots/build-notes-phase3-screenshots/Set-GPRegistryValue_AuditLogon.png)
 
-![Set-GPRegistryValue for SCENoApplyLegacyAuditPolicy (1)](../screenshots/build-notes-phase3-screenshots/Set-GPRegistryValue_SCENoApplyLegacyAuditPolicy.jpg)
+![Set-GPRegistryValue for SCENoApplyLegacyAuditPolicy (1)](../screenshots/build-notes-phase3-screenshots/Set-GPRegistryValue_SCENoApplyLegacyAuditPolicy.png)
 
 
 After configuring the GPO, a remote policy refresh was triggered on both servers:
@@ -79,8 +79,7 @@ After configuring the GPO, a remote policy refresh was triggered on both servers
 Invoke-GPUpdate -Computer "DC01" -Force
 Invoke-GPUpdate -Computer "FS01" -Force
 ```
-![Invoking GPUpdate on both servers](../screenshots/build-notes-phase3-screenshots/Invoke-GPUpdate_to_both_servers.jpg)
-(Invoke-GPUpdate_to_both_servers)
+![Invoking GPUpdate on both servers](../screenshots/build-notes-phase3-screenshots/Invoke-GPUpdate_to_both_servers.png)
 
 ## Section B – File Access Auditing on FS01
 All file-auditing work in this section was done on FS01 using PowerShell.
@@ -93,8 +92,7 @@ On FS01, create the missing IT folder:
 ```powershell
 New-Item -Path "C:\Dept\IT" -ItemType Directory -Force
 ```
-![Creating IT department folder](../screenshots/build-notes-phase3-screenshots/Creating_IT_Folder.jpg)
-(Creating_IT_Folder)
+![Creating IT department folder](../screenshots/build-notes-phase3-screenshots/Creating_IT_Folder.png)
 
 On DC01, create Ian IT (iit):
 
@@ -105,8 +103,7 @@ $Password = Read-Host "Enter password for Ian IT" -AsSecureString
 New-ADUser -Name "Ian IT" -SamAccountName "iit" -UserPrincipalName "iit@corp.local" `
   -Path "OU=IT,OU=Users,OU=Corp,DC=corp,DC=local" -AccountPassword $Password -Enabled $true
 ```
-![Creating new IT user iit](../screenshots/build-notes-phase3-screenshots/Creating_New_User_iit.jpg)
-(Creating_New_User_iit)
+![Creating new IT user iit](../screenshots/build-notes-phase3-screenshots/Creating_New_User_iit.png)
 
 Grant read/write access for iit on the IT share and folder:
 
@@ -114,8 +111,7 @@ Grant read/write access for iit on the IT share and folder:
 Grant-SmbShareAccess -Name "IT" -AccountName "CORP\iit" -AccessRight Change -Force
 icacls "C:\Dept\IT" /grant "CORP\iit:(OI)(CI)M"
 ```
-![icacls output for IT folder including new user](../screenshots/build-notes-phase3-screenshots/Icacls_output_for_IT_folder_including_newuser.jpg)
-(Icacls_output_for_IT_folder_including_newuser)
+![icacls output for IT folder including new user](../screenshots/build-notes-phase3-screenshots/Icacls_output_for_IT_folder_including_newuser.png)
 
 ### B.2 Enable File System Auditing Policy
 Goal: Ensure Windows generates 4663 object access events.
@@ -125,8 +121,7 @@ Initial HR-only configuration:
 ```powershell
 auditpol /set /subcategory:"File System" /success:enable /failure:enable
 ```
-![Enabling file system auditing for HR](../screenshots/build-notes-phase3-screenshots/enabling_file_system_auditng_HR.jpg)
-(enabling_file_system_auditng_HR)
+![Enabling file system auditing for HR](../screenshots/build-notes-phase3-screenshots/enabling_file_system_auditng_HR.png)
 
 Extended to all department folders as final state:
 
@@ -134,8 +129,7 @@ Extended to all department folders as final state:
 auditpol /get /subcategory:"File System" /success:enable /failure:enable
 ```
 
-![Enabling file system auditing for all dept folders](../screenshots/build-notes-phase3-screenshots/Enabling_File_system_auditing_2.jpg)
-(Enabling_File_system_auditing_2)
+![Enabling file system auditing for all dept folders](../screenshots/build-notes-phase3-screenshots/Enabling_File_system_auditing_2.png)
 
 ### B.3 Configure SACLs for Department Folders
 ```powershell
@@ -176,7 +170,7 @@ New-PSDrive -Name H -PSProvider FileSystem -Root "\\FS01\HR" -Persist
 ```
 hgreen creates and edits an audit-test-txt.txt file in the HR share to trigger events.
 
-![Creating audit-test-txt.txt as hgreen](../screenshots/build-notes-phase3-screenshots/Creating_audit_test_txt_as_hgreen.jpg)
+![Creating audit-test-txt.txt as hgreen](../screenshots/build-notes-phase3-screenshots/Creating_audit_test_txt_as_hgreen.png)
 (Creating_audit_test_txt_as_hgreen)
 
 (Repeat similar steps for IT, Finance, and Sales users as needed.)
@@ -195,7 +189,7 @@ Get-WinEvent -FilterHashtable @{LogName='Security'; Id=4663} -MaxEvents 100 |
   Where-Object { $_.Message -like '*C:\Dept\HR\*' } |
   Format-List TimeCreated, Message
 ```
-![4663 event – HR user access proof](../screenshots/build-notes-phase3-screenshots/4663_Event_HR_User_Access_Proof.jpg)
+![4663 event – HR user access proof](../screenshots/build-notes-phase3-screenshots/4663_Event_HR_User_Access_Proof.png)
 (4663_Event_HR_User_Access_Proof)
 
 You can repeat the same query with C:\Dept\IT, C:\Dept\Finance, and C:\Dept\Sales to confirm auditing for the other departments.
