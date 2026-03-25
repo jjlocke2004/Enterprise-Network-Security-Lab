@@ -2,7 +2,7 @@
 
 Virtual enterprise network security lab constructed with VMware Workstation to model a small windows and linux network with Active Directory, file services, Ubuntu Server and Kali VM in case study security tools VM. Vulnerabilities are scanned, hardened, and viewed on a segmented portion of the 192.168.10.0/24 network by scanning the environment.
 
-**Status:** Phase 7 (Hardening and Re-Assessment) currently in progress. Phase 6 (Nessus Essentials vulnerability assessment) complete with unauthenticated and attempted authenticated scans finished. Phase 5 (RMF Asset Inventory and Risk Baseline) complete. Phases 1–4 complete with full documentation (AD/file services, cross-platform auditing, Linux integration).
+**Status:** Phase 7 (Hardening and Re-Assessment) complete. Phase 6 (Nessus Essentials vulnerability assessment) full with unauthenticated and attempted authenticated scan. Phase 5 (RMF Asset Inventory and Risk Baseline) is finished. Phases 1-4 are fully documented (AD/ file services, cross platform auditing, Linux integration).
 
 ## Lab Goals
 
@@ -176,23 +176,50 @@ Three vulnerabilities that were selected to be remedied, one of them per host:
 
 ### Phase 7 – Hardening and Re-Assessment
 
-**Objective:** Implement hardening steps according to the Phase 5 (risk matrix) and Phase 6 (Nessus results), verify the improvements by means of follow-up scans and record the remediation actions.
+**Purpose:** Hardening actions following the Phase 5 risk matrix and Phase 6 Nessus results, and confirm with follow-up scans and record remediation measures towards each of the hosts selected.
 
-**Status:** In progress.
 
-**Planned accomplishments:**
+**Status:** Complete - hardening controls implemented on UBUNTU-SRV, FS01, and DC01 and Nessus follow-up scans were reviewed.
 
-#### 7.1 UBUNTU-SRV Hardening
-- Enable ufw with default deny incoming and allow ssh only.
-- Turn off root SSH login, through /etc/ssh/sshd_config (PermitRootLogin no).
-- Install any security patches with pending updates by running apt update and apt upgrade -y.
-- Check ICMP timestamp discovery plug-in does not report during post-hardening scan.
+**Key accomplishments:**
 
-#### 7.2 FS01 SMB Hardening
-- Sign with SMB: Signing on with Microsoft network server: Digitally sign communications (always) registry key or Group Policy.
-- Disable SMBv1 by PowerShell with the command Disable-WindowsOptionalFeature.
-- Check under post hardening scan: Verify SMB Signing not required it is not reported anymore.
+#### UBUNTU-SRV - ICMP Timestamp Request Remote Date Disclosure.
+- Nessus confirmed that UBUNTU-SRV was responding to ICMP timestamp requests (information disclosure).
+- Enabled and set up ufw to use a default deny posture on inbound traffic but permit needed services:
+- sudo ufw default deny incoming.
+- sudo ufw default allow outgoing.
+- `sudo ufw allow ssh`
+- `sudo ufw enable`
+- Checked with the command verified ufw status verbose indicated that firewall was active with default deny on incoming and allow on outgoing and the SSH being an explicit allow rule.
+- Re-scanned Nessus and ensured that the "ICMP Timestamp Request Remote Date Disclosure" plug-in did not flag UBUNTU-SRV anymore.
 
-#### 7.3 DC01 Share Access Control and Password Policy
-- Set NTFS departmental share ACLs to least-privilege (do not break SYSVOL/ NETLOGON).
-- Implement domain password policy
+#### FS01 - SMB Signing Not Required
+- Used authenticated Nessus results of Phase 6 to prioritize on FS01 (risk of SMB session hijacking/MITM), SMB Signing Not Required.
+- Signing SMB using registry keys and a restart of the service:
+- `reg add HKLM\SYSTEM\CurrentControlSet\Services LanmanServer\Parameters /v RequireSecuritySignature /t REG_DWORD/d 1 /f.`
+- `reg add "HKLM\SYSTEM\CurrentControlSet\Services LanmanWorkstation\Parameters" /v RequiresecuritySignature/t REG_DWORD/d 1/f`
+- net stop lanmanserver/net start lanmanserver.
+- validated a configuration using command output and re-executed the authenticated DC/FS scan to ensure that the vulnerability of not having SMB Signing being not required was not true of FS01 anymore.
+
+#### DC01 - SMB - Least-privilege access (lab share)
+- Took the Phase 6 result of Microsoft Windows SMB Shares Unprivileged Access as an excuse to harden a lab data share rather than make changes to SYSVOL/NETLOGON (which should not be changed because it needs to be readable by AD and GPO).
+- Shared out a specific lab with a virtual lab share that was created and named C:\DeptShare_Test and set it with extensive access at first in order to simulate a misconfiguration:
+NTFS: icacls C:\DeptShare_Test /grant everyone (OI) (CI)M.
+- Share: `New-SmbShare -Name 'DeptShare_Test' -Path C:DeptShare_Test' -FullAccess everyone'
+- Share-level applied least-privilege hardening:
+- Removed broad identities:
+- Revoke-SmbShareAccess Name 'DeptShare_Test' AccountName everyone force
+- Revoke-SmbShareAccess -Name DeptShare Test -accountname Authenticated Users -force
+- Ignored only domain groups necessary:
+- Grant-SmbShareAccess -Name "DeptShare_ Test" -AccountName CORP domain Admins -AccessRight Full -Force.
+- Grant-SmbShareAccess -Name DeptShare -Test -AccountName CORPHRShareRW -AccessRight Full -Force.
+- Checked with Get-SmbShareAccess -Name DeptShare_Test' that it was limited to the following groups.
+- NTFS ACLs that match the least-privilege model:
+- icacls C:DeptShareTest/ remove:g everyone.
+- icacls C: DeptShare Test / grant:r CORP Domain admins:(OI)/CI /F
+- icacls C:DeptShare_Test /grant:r CORP HR Share RW: (OI) (CI) F.
+- Verified by running icacls C:DeptShare_Test that Everyone has been removed and only the domestic groups (as well as system/administrators) have been left.
+- Re-executed the authenticated DC/FS scan and used the result, together with the ACL/SMB output, as a testimony to employing the least-privilege but leaving SYSVOL/NETLOGON to their safe default settings.
+
+- `docs/09-build-notes-phase7.md` - Step-by-step instructions on how to harden UBUNTU-SRV (ufw configuration), FS01 (SMB signing registry changes and service restart), and DC01 (DeptShare_Test NTFS/share ACL changes) including before and after Nessus screenshots found in the sub-directory screenshots/build-notes-phase7-screenshots.
+
