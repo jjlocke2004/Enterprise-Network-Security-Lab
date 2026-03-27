@@ -46,7 +46,7 @@ Having saved the policy I started the scan and waited until it was done.
 After the scan was complete Nessus advanced a report of basically informational problems as well as a few low/medium findings apparent on the network:
 
 ![nessus-unauth-scan-fs01-ubuntu-vulnerabilities](../screenshots/build-notes-phase6-screenshots/nessus-unauth-scan-fs01-ubuntu-vulnerabilities.png)
-![unauthenticated-scan-hosts](screenshots/build-notes-phase6-screenshots/unauthenticated-scan-hosts.png)
+![unauthenticated-scan-hosts](../screenshots/build-notes-phase6-screenshots/unauthenticated-scan-hosts.png)
 
 Important unauthenticated results I used subsequently to make remediation:
 
