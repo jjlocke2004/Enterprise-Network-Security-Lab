@@ -117,7 +117,7 @@ Object Name: C:\Dept\HR\linux-test.txt (or the file created from Ubuntu).
 
 Account Name for CORP\hgreen.
 
-![verifying-auditing-on-windows-server-after-new-file](../screenshots/build-notes-phase4-screenshots/verifying-auditing-on-windows-server-after-new-file.png)
+![verifying-auditing-on-windows-server-after-new-file](../screenshots/build-notes-phase4-screenshots/veryfing-audting-on-windows-server-after-new-file.png)
 
 7. Kerberos / Partial AD Integration Issues
 DNS and Kerberos work, but automated Linux realm join is incomplete.
