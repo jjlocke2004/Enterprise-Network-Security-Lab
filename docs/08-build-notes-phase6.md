@@ -13,7 +13,7 @@ ping -c3 192.168.10.10   # DC01
 ping -c3 192.168.10.11   # FS01
 ping -c3 192.168.10.20   # UBUNTU-SRV
 ```
-![successful-pings-to-servers-from-sec-tools](screenshots/build-notes-phase6-screenshots/successful-pings-to-servers-from-sec-tools.png)
+![successful-pings-to-servers-from-sec-tools](../screenshots/build-notes-phase6-screenshots/successful-pings-to-servers-from-sec-tools.png)
 
 ## 6.2 Get Nessus Essentials on Kali.
 To install the Nessus Essentials .deb on SEC-TOOLS, I installed the essentials package and then started the service so that the web UI can be reached on https://127.0.0.1:8834:
@@ -23,7 +23,7 @@ cd /opt/nessus
 sudo systemctl start nessusd
 sudo systemctl enable nessusd
 ```
-![start-enable-nessus](screenshots/build-notes-phase6-screenshots/start-enable-nessus.png)
+![start-enable-nessus](../screenshots/build-notes-phase6-screenshots/start-enable-nessus.png)
 
 From the SEC-TOOLS browser I went through the first Nessus Essentials setup, created an Essentials key, and left the initial download of the plugins run.
 
@@ -37,7 +37,7 @@ Targets: 192.168.10.11 (FS01), 192.168.10.20 (UBUNTU-SRV)
 
 No credentials
 
-![unauthenticated-scan-configuration](screenshots/build-notes-phase6-screenshots/unauthenticated-scan-configuration.png)
+![unauthenticated-scan-configuration](../screenshots/build-notes-phase6-screenshots/unauthenticated-scan-configuration.png)
 
 
 Having saved the policy I started the scan and waited until it was done.
@@ -45,7 +45,7 @@ Having saved the policy I started the scan and waited until it was done.
 ### 6.3.2 Results and top findings without authentication.
 After the scan was complete Nessus advanced a report of basically informational problems as well as a few low/medium findings apparent on the network:
 
-![nessus-unauth-scan-fs01-ubuntu-vulnerabilities](screenshots/build-notes-phase6-screenshots/nessus-unauth-scan-fs01-ubuntu-vulnerabilities.png)
+![nessus-unauth-scan-fs01-ubuntu-vulnerabilities](../screenshots/build-notes-phase6-screenshots/nessus-unauth-scan-fs01-ubuntu-vulnerabilities.png)
 ![unauthenticated-scan-hosts](screenshots/build-notes-phase6-screenshots/unauthenticated-scan-hosts.png)
 
 Important unauthenticated results I used subsequently to make remediation:
@@ -56,7 +56,7 @@ Type: configuration / weak SMB protection
 
 This was demonstrated by Nessus when it reported that the file server supports signed SMB sessions as thus allowing man in the middle attacks.
 
-![fs01-vulnerability](screenshots/build-notes-phase6-screenshots/fs01-vulnerability.png)
+![fs01-vulnerability](../screenshots/build-notes-phase6-screenshots/fs01-vulnerability.png)
 
 ICMP Timestamp request remote date disclosure (UBUNTU-SRV, Low)
 
@@ -64,7 +64,7 @@ Type: information disclosure.
 
 ICMP timestamping UBUNTU-SRV acted on ICMP timestamp messages, providing unauthenticated hosts with information on its system time.
 
-![ubuntu-srv-vulnerability](screenshots/build-notes-phase6-screenshots/ubuntu-srv-vulnerability.png)
+![ubuntu-srv-vulnerability](../screenshots/build-notes-phase6-screenshots/ubuntu-srv-vulnerability.png)
 
 SMB (Multiple Issues) (FS01, Info)
 
@@ -99,8 +99,8 @@ Policy: Basic Network Scan
 
 Windows credentials: domain account CORP\svcscanner created in AD and made a member of the local Users group on DC01 and FS01.
 
-![auth-scan-configuration](screenshots/build-notes-phase6-screenshots/auth-scan-configuration-nessus.png)
-![authentication-method-for-scan](screenshots/build-notes-phase6-screenshots/authentication-method-for-scan.png)
+![auth-scan-configuration](../screenshots/build-notes-phase6-screenshots/auth-scan-configuration-nessus.png)
+![authentication-method-for-scan](../screenshots/build-notes-phase6-screenshots/authentication-method-for-scan.png)
 
 I ensured on both servers that svcscanner was in the local Users group and enabled windows firewall rules on both WMI and Remote Administration so Nessus could be allowed to attempt credentialed checks.
 
@@ -116,7 +116,7 @@ Microsoft Windows SMB Shares Unprivileged Access (DC01, High) - a share like SYS
 
 SMB Signing not required (FS01, Medium) - this is identical to unauthenticated, but is now validated in light of a domain user.
 
-![dc01-vulnerability](screenshots/build-notes-phase6-screenshots/dc01-vulnerability.png)
+![dc01-vulnerability](../screenshots/build-notes-phase6-screenshots/dc01-vulnerability.png)
 
 (In the lab write-up I recorded the credential configuration process and the Auth: Fail state and used the unauthenticated base together with the following SMB findings to lead to remediation, in effect).
 
